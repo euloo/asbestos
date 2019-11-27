@@ -21,15 +21,16 @@ def parse_anno_file(cvat_xml):
 
     return anno
 
-def create_mask_file(annotation):
+def create_mask_file(annotation, label):
     size = (int(annotation['height']), int(annotation['width']))
+#     labels = set([ob['label'] for ob in annotation['shapes']])
     mask = np.zeros(size, dtype=np.uint8)
     for shape in annotation['shapes']:
-        
-        points = [tuple(map(float, p.split(','))) for p in shape['points'].split(';')]
-        points = np.array([(int(p[0]), int(p[1])) for p in points])
+        if label == shape['label']:
+            points = [tuple(map(float, p.split(','))) for p in shape['points'].split(';')]
+            points = np.array([(int(p[0]), int(p[1])) for p in points])
 
-        mask = cv2.fillPoly(mask, [points], color=255)
+            mask = cv2.fillPoly(mask, [points], color=255)
         
     return mask
         
